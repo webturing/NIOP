@@ -2,7 +2,7 @@
 
 using namespace std;
 
-const int maxn = 100 + 50;
+const int maxn = 100000 + 50;
 vector<bool> primes(maxn, true);
 
 void sieve() {
