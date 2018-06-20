@@ -16,7 +16,10 @@ struct BigInteger {
     }
 
     friend ostream &operator<<(ostream &os, const BigInteger &b) {
-        copy(b.D.rbegin(), b.D.rend(), ostream_iterator<int>(os, ""));
+        auto firstNonZero = b.D.rbegin();
+        while (*firstNonZero == 0 && firstNonZero != b.D.rend() - 1)
+            ++firstNonZero;
+        copy(firstNonZero, b.D.rend(), ostream_iterator<int>(os, ""));
         return os;
     }
 
@@ -25,6 +28,7 @@ struct BigInteger {
             return 0;
         return D[pos];
     }
+
 
     BigInteger operator+(const BigInteger &b) const {
         BigInteger c;
@@ -35,9 +39,6 @@ struct BigInteger {
             sc = temp / 10;
             c.D.push_back(temp % 10);
         }
-        if (sc) {
-            c.D.push_back(sc);
-        }
         return c;
     }
 
@@ -45,12 +46,20 @@ struct BigInteger {
         BigInteger c;
         c.len = len + b.len;
         c.D.resize(c.len);
-        int sc = 0;
         for (int i = 0; i < len; i++)
             for (int j = 0; j < b.len; j++) {
-                int temp = getDigitAt(i) * b.getDigitAt(j) + sc;
+                c.D[i + j] += getDigitAt(i) * b.getDigitAt(j);
 
             }
+        int sc = 0;
+        for (int i = 0; i < c.len; i++) {
+            int temp = sc + c.D[i];
+            sc = temp / 10;
+            c.D[i] = temp % 10;
+        }
+        if (sc) {
+            c.D[c.len - 1] += sc;
+        }
         return c;
     }
 };
